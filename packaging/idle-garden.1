@@ -1,0 +1,61 @@
+.TH IDLE-GARDEN 1 "2026" "idle-garden 0.3.0" "User Commands"
+.SH NAME
+idle-garden \- an ASCII tree slowly grows over your screen while you are away
+.SH SYNOPSIS
+.B idle-garden
+[\fIOPTIONS\fR]
+.SH DESCRIPTION
+.B idle-garden
+runs in the background of your desktop session. When the mouse and keyboard
+have not been touched for a while, a fullscreen window appears on every monitor
+and an ASCII tree starts growing from a small patch of earth: a trunk, a crown,
+branches, vines and ivy, until the whole screen is overgrown. Any mouse
+movement, click or key press makes it disappear instantly. It never locks the
+session.
+.PP
+It starts automatically after login. Run without options to start it by hand.
+.SH OPTIONS
+.TP
+.B \-\-preview
+Show the tree right now, fullscreen. Move the mouse to close it.
+.TP
+.B \-\-terminal
+Grow a tree inside the current terminal. Press any key to quit.
+.TP
+.BI \-g " MINUTES" "\fR, \fP" \-\-grow\-minutes " MINUTES"
+Minutes until the tree fills the screen (default 40).
+.TP
+.BI \-t " SECONDS" "\fR, \fP" \-\-timeout " SECONDS"
+Seconds without input before the tree appears (default 120).
+.TP
+.BI \-\-font\-size " PIXELS"
+Size of the ASCII characters (default 18).
+.TP
+.B \-\-restart
+Restart the background app, for example after editing the settings.
+.TP
+.B \-\-stop
+Stop the background app until the next login.
+.TP
+.B \-\-check
+Show how idle time is detected on this desktop.
+.TP
+.B \-\-edit\-config
+Create the settings file if needed and print its path.
+.TP
+.B \-V, \-\-version
+Print the version.
+.SH FILES
+.TP
+.I ~/.config/idle-garden/config.ini
+Settings: timeout, grow_minutes, font, font_size, background,
+respect_inhibit, keep_screen_on.
+.SH EXAMPLES
+.TP
+.B idle-garden \-\-preview \-g 2
+Watch a whole tree grow in two minutes.
+.TP
+.B idle-garden \-\-terminal
+Grow a tree in the terminal.
+.SH SEE ALSO
+https://github.com/DMgen10/idle-garden
