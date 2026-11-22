@@ -1,0 +1,62 @@
+name: release
+
+# Publishes a GitHub release with the .deb whenever main gets a version
+# (idle_garden/__version__) that has no release yet. Tag v<version> is created
+# automatically, so releasing = bump the version + add a CHANGELOG section.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Is this version new?
+        id: v
+        run: |
+          VERSION=$(python3 -c "import idle_garden; print(idle_garden.__version__)")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
+            echo "new=false" >> "$GITHUB_OUTPUT"; echo "v$VERSION already released"
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Tests
+        if: steps.v.outputs.new == 'true'
+        run: python3 -m unittest discover -s tests -t .
+      - name: Build .deb
+        if: steps.v.outputs.new == 'true'
+        run: bash packaging/build_deb.sh
+      - name: Release notes from CHANGELOG.md
+        if: steps.v.outputs.new == 'true'
+        run: |
+          awk '/^## /{n++} n==1' CHANGELOG.md | tail -n +2 > notes.md
+          cat >> notes.md <<'MD'
+
+          ### Install
+
+          ```bash
+          wget https://github.com/DMgen10/idle-garden/releases/latest/download/idle-garden.deb
+          sudo apt install ./idle-garden.deb
+          idle-garden --preview -g 2
+          ```
+
+          ![demo](https://raw.githubusercontent.com/DMgen10/idle-garden/main/docs/demo.gif)
+          MD
+      - uses: softprops/action-gh-release@v2
+        if: steps.v.outputs.new == 'true'
+        with:
+          tag_name: v${{ steps.v.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: Idle Garden ${{ steps.v.outputs.version }}
+          body_path: notes.md
+          files: |
+            dist/idle-garden_*_all.deb
+            dist/idle-garden.deb
