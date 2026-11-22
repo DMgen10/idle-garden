@@ -1,0 +1,38 @@
+name: assets
+
+# Renders docs/demo.gif and docs/social-preview.png from the tree generator
+# and commits them, so the README always shows the current tree.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "idle_garden/plants.py"
+      - "tools/**"
+      - ".github/workflows/assets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fonts and Pillow
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-dejavu-core
+          pip install pillow
+      - name: Render
+        run: |
+          python tools/make_demo_gif.py
+          python tools/make_social.py
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add docs/demo.gif docs/social-preview.png
+          git diff --cached --quiet || { git commit -m "Render demo.gif and social preview [skip ci]"; git push; }
