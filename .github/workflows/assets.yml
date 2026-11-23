@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - "idle_garden/plants.py"
+      - "idle_garden/themes.py"
       - "tools/**"
       - ".github/workflows/assets.yml"
   workflow_dispatch:
@@ -30,9 +31,10 @@ jobs:
         run: |
           python tools/make_demo_gif.py
           python tools/make_social.py
+          python tools/make_themes.py
       - name: Commit if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
-          git add docs/demo.gif docs/social-preview.png
+          git add docs/demo.gif docs/social-preview.png docs/themes.png
           git diff --cached --quiet || { git commit -m "Render demo.gif and social preview [skip ci]"; git push; }
