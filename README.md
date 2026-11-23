@@ -13,11 +13,12 @@ Move the mouse or press any key, and it's gone.
 
 [![Tests](https://github.com/DMgen10/idle-garden/actions/workflows/tests.yml/badge.svg)](https://github.com/DMgen10/idle-garden/actions/workflows/tests.yml)
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-20.04%2B-E95420?logo=ubuntu&logoColor=white)](#-requirements)
+[![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows&logoColor=white)](#-windows)
 [![Wayland & X11](https://img.shields.io/badge/Wayland%20%26%20X11-supported-4caf50)](#-how-it-works)
 [![Python](https://img.shields.io/badge/python-3.8%2B-3776AB?logo=python&logoColor=white)](#-requirements)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**[Install](#-install) · [Try without installing](#-try-it-first) · [Settings](#%EF%B8%8F-settings) · [Русская версия](README.ru.md)**
+**[Install](#-install) · [Windows](#-windows) · [Try without installing](#-try-it-first) · [Settings](#%EF%B8%8F-settings) · [Русская версия](README.ru.md)**
 
 </div>
 
@@ -34,11 +35,15 @@ and, if you stay away long enough, swallows the whole screen in leaves.
 - 🐌 **Grows slowly and unevenly**, like a living thing: some branches race ahead, others rest and catch up later,
   growth comes in spurts and lulls. About 40 minutes to overgrow the screen (configurable).
 - 🍃 **Stays alive.** Once the screen is covered, fresh bright leaves keep unfolding among the old dark ones.
+- 🌗 **Light and dark.** Follows your system theme automatically — night garden or ink on paper.
+- 🪟 **Linux and Windows.** One `.deb` for Ubuntu, one `.exe` for Windows 10/11.
 - 🖱️ **Gone instantly** on any mouse movement, click, scroll or key press. It never locks your session.
 - 🎬 **Polite.** Doesn't start while you watch a video or sit in a call.
 - 🖥️ **Every monitor** gets its own tree.
-- 🪶 **Tiny.** Pure Python, no pip packages — it uses the GTK that already ships with Ubuntu.
+- 🪶 **Tiny.** Pure Python, no pip packages — GTK on Ubuntu, the built-in tkinter on Windows.
 - 💻 **Bonus:** grow a tree right in your terminal with `idle-garden --terminal`.
+
+<p align="center"><img src="docs/themes.png" alt="The same tree in the dark and the light theme" width="760"></p>
 
 ## 👀 Try it first
 
@@ -70,6 +75,25 @@ curl -fsSL https://raw.githubusercontent.com/DMgen10/idle-garden/main/install.sh
 That's it. Leave the computer alone for **2 minutes** and the first sprout appears.
 `man idle-garden` and `idle-garden --help` list everything it can do.
 
+## 🪟 Windows
+
+**Windows 10 / 11** — download [`IdleGarden.exe`](https://github.com/DMgen10/idle-garden/releases/latest/download/IdleGarden.exe)
+and double-click it. That's the whole installation: it puts itself in your user folder, starts at every login
+and adds **Idle Garden** (preview) and **Uninstall Idle Garden** to the Start menu. No admin rights, no Python needed.
+
+Or in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/DMgen10/idle-garden/main/install.ps1 | iex
+```
+
+> Windows SmartScreen may say *"Windows protected your PC"* because the .exe isn't code-signed —
+> click **More info → Run anyway**. The PowerShell command above doesn't trigger it.
+> Prefer running from source? With [Python](https://www.python.org/downloads/) installed:
+> `py -m idle_garden --preview -g 2`, and `py -m idle_garden --install` to make it start with Windows.
+
+Settings live in `%APPDATA%\idle-garden\config.ini` (`IdleGarden.exe --edit-config` opens it in Notepad).
+
 ## 🎮 Usage
 
 | Command | What it does |
@@ -79,20 +103,24 @@ That's it. Leave the computer alone for **2 minutes** and the first sprout appea
 | `idle-garden --terminal` | Grow a tree in the current terminal |
 | `idle-garden --restart` | Restart the background app (after changing settings) |
 | `idle-garden --stop` | Stop it until the next login |
-| `idle-garden --check` | Check that idle detection works on your desktop |
+| `idle-garden --check` | Check idle detection and which theme is used |
+| `idle-garden --preview --theme light` | Try the other theme |
 
 There is also an **Idle Garden** entry in the app menu that opens a preview.
 
 ## ⚙️ Settings
 
-Edit `~/.config/idle-garden/config.ini`, then run `idle-garden --restart`.
+Edit `~/.config/idle-garden/config.ini` (Windows: `%APPDATA%\idle-garden\config.ini`),
+then run `idle-garden --restart`.
 
 | Option | Default | Meaning |
 |---|---|---|
 | `timeout` | `120` | Seconds without input before the sprout appears |
 | `grow_minutes` | `40` | Minutes until the tree fills the whole screen |
-| `font` / `font_size` | `Monospace` / `18` | Font of the ASCII art (bigger font = bigger leaves) |
-| `background` | `#000000` | Background colour |
+| `font` / `font_size` | `auto` / `18` | Font of the ASCII art (bigger font = bigger leaves); `auto` = Monospace / Consolas |
+| `theme` | `auto` | `auto` follows the system light/dark style; or `dark` / `light` |
+| `dark_background` | `#000000` | Background of the dark theme |
+| `light_background` | `#f4f1e8` | Background of the light theme |
 | `respect_inhibit` | `true` | Don't start while a video/call keeps the system awake |
 | `keep_screen_on` | `false` | Stop Ubuntu from blanking the monitor while the tree is shown |
 
@@ -103,7 +131,11 @@ Edit `~/.config/idle-garden/config.ini`, then run `idle-garden --restart`.
 
 - **Idle time** comes from GNOME's `org.gnome.Mutter.IdleMonitor` over D-Bus, so it works on both Wayland and X11.
   Other X11 desktops fall back to the XScreenSaver extension or `xprintidle`.
-- When you've been idle for `timeout` seconds, a borderless fullscreen GTK window opens on every monitor.
+  On Windows it comes from `GetLastInputInfo`.
+- When you've been idle for `timeout` seconds, a borderless fullscreen window opens on every monitor
+  (GTK on Linux, tkinter on Windows).
+- **Theme**: Ubuntu's `color-scheme` (via the XDG portal or gsettings), Windows' *App mode* in the registry —
+  read again every time the tree appears.
 - The tree's shape comes from the **space colonization** algorithm: thousands of points are scattered over
   the screen (some in clumps, so every crown is lopsided its own way) and the branches grow towards them.
   Each branch gets its own vigour and resting periods; vines and ivy are curly random walks on top.
@@ -117,17 +149,21 @@ Edit `~/.config/idle-garden/config.ini`, then run `idle-garden --restart`.
 **Does it start during YouTube / Zoom?** No — apps that keep the system awake also keep Idle Garden away
 (turn off with `respect_inhibit = false`).
 
+**Light theme, but the tree is dark (or the other way round)?** Check `idle-garden --check`: the `theme` line shows
+what the system reports. Set `theme = light` or `dark` to stop guessing.
+
 **KDE / Sway / other Wayland desktops?** Not yet: there is no common way to read idle time there. PRs welcome!
 
-**How do I remove it?** If you installed the `.deb`: `sudo apt remove idle-garden`.
+**How do I remove it?** Windows: Start menu → **Uninstall Idle Garden**.
+If you installed the `.deb`: `sudo apt remove idle-garden`.
 If you used the script: `curl -fsSL https://raw.githubusercontent.com/DMgen10/idle-garden/main/uninstall.sh | bash`
 (add `-s -- --purge` to delete settings too).
 
 ## 📋 Requirements
 
-- Ubuntu 20.04+ (or another Linux with GNOME, or any X11 desktop)
-- Python 3.8+ and GTK 3 bindings — preinstalled on Ubuntu Desktop, otherwise:
-  `sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0`
+- **Linux:** Ubuntu 20.04+ (or another Linux with GNOME, or any X11 desktop), Python 3.8+ and GTK 3 bindings —
+  preinstalled on Ubuntu Desktop, otherwise: `sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0`
+- **Windows:** Windows 10 or 11. Nothing else for the `.exe`; Python 3.8+ to run from source.
 
 ## 🤝 Contributing
 
@@ -141,8 +177,11 @@ python3 tools/make_demo_gif.py               # regenerate docs/demo.gif (needs P
 bash packaging/build_deb.sh                  # build dist/idle-garden.deb
 ```
 
+On Windows: `python packaging\windows\smoke_test.py` opens the fullscreen windows for a few seconds in both themes,
+`packaging\windows\build_exe.ps1` builds `dist\IdleGarden.exe` (PyInstaller).
+
 Releases are automatic: bump `__version__` in `idle_garden/__init__.py`, add a section on top of `CHANGELOG.md`
-and push to `main` — GitHub Actions tags the version, builds the `.deb` and publishes the release.
+and push to `main` — GitHub Actions tags the version, builds the `.deb` and the `.exe` and publishes the release.
 
 If you enjoy it, a ⭐ helps other people find it.
 
