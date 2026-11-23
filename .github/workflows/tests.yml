@@ -22,3 +22,22 @@ jobs:
       - name: Debian package builds
         if: matrix.python == '3.12'
         run: bash packaging/build_deb.sh && dpkg-deb --info dist/idle-garden.deb
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover -s tests -t . -v
+      - name: Smoke test (idle time, fullscreen windows in both themes)
+        run: python packaging/windows/smoke_test.py
+      - name: Build IdleGarden.exe
+        shell: pwsh
+        run: ./packaging/windows/build_exe.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IdleGarden-exe
+          path: dist/IdleGarden.exe

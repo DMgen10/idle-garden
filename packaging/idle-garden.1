@@ -1,4 +1,4 @@
-.TH IDLE-GARDEN 1 "2026" "idle-garden 0.3.0" "User Commands"
+.TH IDLE-GARDEN 1 "2026" "idle-garden 0.4.0" "User Commands"
 .SH NAME
 idle-garden \- an ASCII tree slowly grows over your screen while you are away
 .SH SYNOPSIS
@@ -28,6 +28,9 @@ Minutes until the tree fills the screen (default 40).
 .BI \-t " SECONDS" "\fR, \fP" \-\-timeout " SECONDS"
 Seconds without input before the tree appears (default 120).
 .TP
+.BI \-\-theme " auto|dark|light"
+Colour theme. \fBauto\fR (default) follows the system light/dark style.
+.TP
 .BI \-\-font\-size " PIXELS"
 Size of the ASCII characters (default 18).
 .TP
@@ -48,8 +51,8 @@ Print the version.
 .SH FILES
 .TP
 .I ~/.config/idle-garden/config.ini
-Settings: timeout, grow_minutes, font, font_size, background,
-respect_inhibit, keep_screen_on.
+Settings: timeout, grow_minutes, font, font_size, theme,
+dark_background, light_background, respect_inhibit, keep_screen_on.
 .SH EXAMPLES
 .TP
 .B idle-garden \-\-preview \-g 2

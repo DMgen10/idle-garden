@@ -2,6 +2,7 @@
 
 Backends, tried in order:
 
+0. Windows: ``GetLastInputInfo`` from user32 (only backend on Windows).
 1. GNOME / Mutter ``org.gnome.Mutter.IdleMonitor`` over D-Bus. This is what
    Ubuntu uses by default and it works on both Wayland and X11.
 2. The X11 ``XScreenSaver`` extension through ctypes (any X11 desktop:
@@ -18,6 +19,7 @@ import ctypes.util
 import os
 import shutil
 import subprocess
+import sys
 
 
 class _MutterBackend:
@@ -100,13 +102,53 @@ class _XprintidleBackend:
             return None
 
 
+class _LastInputInfo(ctypes.Structure):
+    _fields_ = [("cbSize", ctypes.c_uint), ("dwTime", ctypes.c_uint32)]
+
+
+class _WindowsBackend:
+    name = "windows-getlastinputinfo"
+
+    def __init__(self):
+        if sys.platform != "win32":
+            raise RuntimeError("not Windows")
+        self.user32 = ctypes.windll.user32
+        self.kernel32 = ctypes.windll.kernel32
+        self.kernel32.GetTickCount.restype = ctypes.c_uint32
+        self.info = _LastInputInfo()
+        self.info.cbSize = ctypes.sizeof(_LastInputInfo)
+        if self.idle() is None:
+            raise RuntimeError("GetLastInputInfo failed")
+
+    def idle(self) -> int | None:
+        if not self.user32.GetLastInputInfo(ctypes.byref(self.info)):
+            return None
+        # both are 32-bit millisecond counters that wrap after ~49 days
+        return (self.kernel32.GetTickCount() - self.info.dwTime) & 0xFFFFFFFF
+
+
+def _windows_display_required() -> bool:
+    """True if some app (a video player, a call) asked Windows to keep the display on."""
+    ES_DISPLAY_REQUIRED = 0x00000002
+    SYSTEM_EXECUTION_STATE = 16
+    state = ctypes.c_ulong(0)
+    fn = ctypes.windll.powrprof.CallNtPowerInformation
+    fn.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_ulong, ctypes.c_void_p, ctypes.c_ulong]
+    fn.restype = ctypes.c_long
+    status = fn(
+        SYSTEM_EXECUTION_STATE, None, 0, ctypes.byref(state), ctypes.sizeof(state))
+    return status == 0 and bool(state.value & ES_DISPLAY_REQUIRED)
+
+
 class IdleMonitor:
     """Picks the first backend that works on this desktop."""
 
     def __init__(self):
         errors = []
         self.backend = None
-        for cls in (_MutterBackend, _X11Backend, _XprintidleBackend):
+        chain = (_WindowsBackend,) if sys.platform == "win32" else (
+            _MutterBackend, _X11Backend, _XprintidleBackend)
+        for cls in chain:
             try:
                 self.backend = cls()
                 break
@@ -132,6 +174,11 @@ class IdleMonitor:
 
     def is_inhibited(self) -> bool:
         """True if some app (a video player, a meeting...) asked to stay awake."""
+        if sys.platform == "win32":
+            try:
+                return _windows_display_required()
+            except Exception:  # noqa: BLE001
+                return False
         try:
             from gi.repository import Gio, GLib
 

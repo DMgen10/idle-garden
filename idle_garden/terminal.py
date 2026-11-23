@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
-import curses
+import sys
 import time
 
+try:
+    import curses
+except ImportError:  # Windows without the windows-curses package
+    curses = None
+
 from .config import Config
-from .plants import PALETTE, Garden
+from .plants import Garden
+from .themes import theme_colors
 
 
 def _rgb_to_256(r: int, g: int, b: int) -> int:
@@ -36,7 +42,9 @@ def _main(stdscr, cfg: Config) -> None:
         except curses.error:
             bg = curses.COLOR_BLACK
         conv = _rgb_to_256 if curses.COLORS >= 256 else _rgb_to_8
-        for i, (name, rgb) in enumerate(PALETTE.items(), start=1):
+        # the terminal keeps its own background; pick colours that suit it
+        _theme, palette, _bg = theme_colors(cfg)
+        for i, (name, rgb) in enumerate(palette.items(), start=1):
             if i >= curses.COLOR_PAIRS:
                 break
             curses.init_pair(i, conv(*rgb), bg)
@@ -70,6 +78,10 @@ def _main(stdscr, cfg: Config) -> None:
 
 
 def run_terminal(cfg: Config) -> None:
+    if curses is None:
+        print("Terminal mode needs curses. On Windows install it with:\n"
+              "  py -m pip install windows-curses", file=sys.stderr)
+        return
     try:
         curses.wrapper(_main, cfg)
     except KeyboardInterrupt:

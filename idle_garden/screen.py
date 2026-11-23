@@ -23,7 +23,8 @@ Gdk.set_allowed_backends(os.environ.get("IDLE_GARDEN_GDK_BACKEND", "x11,*"))
 from gi.repository import Gtk  # noqa: E402
 
 from .config import Config  # noqa: E402
-from .plants import PALETTE, Garden  # noqa: E402
+from .plants import Garden  # noqa: E402
+from .themes import theme_colors  # noqa: E402
 
 # Mouse jitter smaller than this (in pixels) does not wake the screen.
 MOTION_THRESHOLD = 10
@@ -32,9 +33,11 @@ GRACE_SECONDS = 0.8
 
 
 class GardenWindow(Gtk.Window):
-    def __init__(self, cfg: Config, monitor: int | None, on_activity):
+    def __init__(self, cfg: Config, monitor: int | None, on_activity, palette, background):
         super().__init__(title="Idle Garden")
         self.cfg = cfg
+        self.palette = palette
+        self.background = tuple(c / 255 for c in background)
         self.on_activity = on_activity
         self.garden: Garden | None = None
         self.metrics = None  # (cell_w, cell_h, ascent)
@@ -112,10 +115,10 @@ class GardenWindow(Gtk.Window):
 
     def _on_draw(self, widget, cr):
         w, h = widget.get_allocated_width(), widget.get_allocated_height()
-        cr.set_source_rgb(*self.cfg.background_rgb)
+        cr.set_source_rgb(*self.background)
         cr.paint()
 
-        cr.select_font_face(self.cfg.font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.select_font_face(self.cfg.font_family, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(self.cfg.font_size)
         if self.metrics is None:
             ascent, _descent, height, *_ = cr.font_extents()
@@ -142,7 +145,7 @@ class GardenWindow(Gtk.Window):
                 line = rows_by_color[color][y] = [" "] * gcols
             line[x] = ch
         for color, lines in rows_by_color.items():
-            r, g, b = PALETTE.get(color, (255, 255, 255))
+            r, g, b = self.palette.get(color, (128, 128, 128))
             cr.set_source_rgb(r / 255, g / 255, b / 255)
             for y, chars in lines.items():
                 cr.move_to(ox, oy + y * cell_h)
@@ -184,8 +187,10 @@ class Daemon:
             return
         display = Gdk.Display.get_default()
         n = display.get_n_monitors() if display else 1
+        # checked every time, so switching the system theme needs no restart
+        _theme, palette, background = theme_colors(self.cfg)
         for i in range(max(1, n)):
-            win = GardenWindow(self.cfg, i if n > 1 else None, self.hide)
+            win = GardenWindow(self.cfg, i if n > 1 else None, self.hide, palette, background)
             win.show_all()
             win.present()
             self.windows.append(win)
