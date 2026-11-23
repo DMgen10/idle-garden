@@ -50,7 +50,7 @@ def main():
     tag = ImageFont.truetype(SANS_REG, 30)
     for k, line in enumerate(("Step away from your computer —", "and an ASCII tree slowly grows", "over your screen.")):
         d.text((84, 305 + k * 42), line, font=tag, fill=(170, 180, 175))
-    d.text((84, 470), "Ubuntu · GNOME · Wayland & X11", font=ImageFont.truetype(MONO, 22), fill=PALETTE["leaf_light"])
+    d.text((84, 470), "Ubuntu · Windows · light & dark", font=ImageFont.truetype(MONO, 22), fill=PALETTE["leaf_light"])
 
     out = ROOT / "docs" / "social-preview.png"
     img.save(out, optimize=True)
