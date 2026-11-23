@@ -1,5 +1,7 @@
 # Changelog
 
+All notable changes to Idle Garden are listed here, newest first.
+
 ## 0.4.0 — light theme and Windows
 
 - 🌗 Light and dark themes. By default the tree follows the system setting (Ubuntu *Appearance → Style*,
