@@ -23,7 +23,7 @@ Gdk.set_allowed_backends(os.environ.get("IDLE_GARDEN_GDK_BACKEND", "x11,*"))
 from gi.repository import Gtk  # noqa: E402
 
 from .config import Config  # noqa: E402
-from .plants import Garden  # noqa: E402
+from .nature import LivingGarden, garden_options  # noqa: E402
 from .themes import theme_colors  # noqa: E402
 
 # Mouse jitter smaller than this (in pixels) does not wake the screen.
@@ -39,7 +39,7 @@ class GardenWindow(Gtk.Window):
         self.palette = palette
         self.background = tuple(c / 255 for c in background)
         self.on_activity = on_activity
-        self.garden: Garden | None = None
+        self.garden: LivingGarden | None = None
         self.metrics = None  # (cell_w, cell_h, ascent)
         self.shown_at = time.monotonic()
         self.last_tick = self.shown_at
@@ -128,7 +128,7 @@ class GardenWindow(Gtk.Window):
         cols, rows = max(20, int(w // cell_w)), max(12, int(h // cell_h))
 
         if self.garden is None:
-            self.garden = Garden(cols, rows, self.cfg.grow_minutes)
+            self.garden = LivingGarden(cols, rows, self.cfg.grow_minutes, **garden_options(self.cfg))
         else:
             self.garden.resize(cols, rows)
         self.last_version = self.garden.version

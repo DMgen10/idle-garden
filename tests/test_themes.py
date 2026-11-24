@@ -10,8 +10,10 @@ from idle_garden.plants import PALETTE
 
 class ThemeTests(unittest.TestCase):
     def test_both_themes_know_every_colour(self):
+        from idle_garden.nature import COLORS
+
         for name, palette in themes.THEMES.items():
-            self.assertEqual(set(palette), set(PALETTE), name)
+            self.assertEqual(set(palette), set(PALETTE) | set(COLORS), name)
 
     def test_light_theme_is_readable_on_light_background(self):
         bg = themes.hex_to_rgb(themes.DEFAULT_BACKGROUND["light"])

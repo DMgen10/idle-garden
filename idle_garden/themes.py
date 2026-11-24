@@ -13,10 +13,12 @@ import shutil
 import subprocess
 import sys
 
+from .nature import COLORS as NATURE_COLORS
 from .plants import PALETTE
 
-# The original night-time palette: bright young leaves that darken with age.
-DARK: dict[str, tuple[int, int, int]] = dict(PALETTE)
+# The original night-time palette: bright young leaves that darken with age,
+# plus the seasons, birds and butterflies.
+DARK: dict[str, tuple[int, int, int]] = {**PALETTE, **NATURE_COLORS}
 
 # Daylight: ink on paper. Same colour names, so every frontend can swap them.
 # Young leaves are a fresh yellow-green, old ones a deep green; everything is
@@ -42,6 +44,26 @@ LIGHT: dict[str, tuple[int, int, int]] = {
     "soil": (118, 80, 48),
     "soil_dark": (88, 60, 38),
     "pebble": (128, 124, 116),
+    # seasons
+    "aut_gold": (184, 132, 12),
+    "aut_yellow": (168, 124, 20),
+    "aut_orange": (200, 100, 20),
+    "aut_red": (180, 54, 34),
+    "aut_rust": (146, 70, 36),
+    "aut_brown": (112, 76, 44),
+    "win_leaf": (44, 86, 70),
+    "snow": (118, 146, 182),  # pale on paper would vanish, so a cold blue-grey
+    "snow_dim": (126, 140, 160),
+    "wind": (112, 152, 82),
+    # visitors
+    "bird": (128, 92, 60),
+    "bird_dark": (84, 80, 78),
+    "bird_red": (196, 52, 42),
+    "bird_blue": (48, 108, 180),
+    "fly_yellow": (176, 136, 0),
+    "fly_white": (134, 124, 168),
+    "fly_orange": (206, 104, 16),
+    "fly_blue": (62, 114, 214),
 }
 
 THEMES = {"dark": DARK, "light": LIGHT}
