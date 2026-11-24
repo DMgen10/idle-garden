@@ -42,6 +42,18 @@ theme = auto
 dark_background = #000000
 light_background = #f4f1e8
 
+# Season: auto (from today's date), spring, summer, autumn or winter
+season = auto
+
+# Your half of the world, for the seasons: auto (guessed from the time zone), north or south
+hemisphere = auto
+
+# Birds and butterflies come to visit
+animals = true
+
+# Gusts of wind ruffle the leaves and blow falling leaves and snow around
+wind = true
+
 # Do not start while a video player or a call asks the system to stay awake
 respect_inhibit = true
 
@@ -60,6 +72,10 @@ class Config:
     theme: str = "auto"
     dark_background: str = "#000000"
     light_background: str = "#f4f1e8"
+    season: str = "auto"
+    hemisphere: str = "auto"
+    animals: bool = True
+    wind: bool = True
     respect_inhibit: bool = True
     keep_screen_on: bool = False
     fps: int = 15

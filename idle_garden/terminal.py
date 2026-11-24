@@ -11,7 +11,7 @@ except ImportError:  # Windows without the windows-curses package
     curses = None
 
 from .config import Config
-from .plants import Garden
+from .nature import LivingGarden, garden_options
 from .themes import theme_colors
 
 
@@ -51,7 +51,7 @@ def _main(stdscr, cfg: Config) -> None:
             pairs[name] = i
 
     rows, cols = stdscr.getmaxyx()
-    garden = Garden(cols - 1, rows, cfg.grow_minutes)
+    garden = LivingGarden(cols - 1, rows, cfg.grow_minutes, **garden_options(cfg))
     last, version = time.monotonic(), -1
     frame = 1.0 / max(1, cfg.fps)
     while True:

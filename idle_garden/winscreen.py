@@ -13,7 +13,7 @@ import tkinter.font as tkfont
 from ctypes import wintypes
 
 from .config import Config
-from .plants import Garden
+from .nature import LivingGarden, garden_options
 from .themes import theme_colors
 
 MOTION_THRESHOLD = 10
@@ -110,7 +110,7 @@ class GardenWindow:
         self.cell_w = max(1, self.font.measure("M"))
         self.cell_h = max(1, self.font.metrics("linespace"))
         cols, rows = max(20, w // self.cell_w), max(12, h // self.cell_h)
-        self.garden = Garden(cols, rows, cfg.grow_minutes)
+        self.garden = LivingGarden(cols, rows, cfg.grow_minutes, **garden_options(cfg))
         self.ox = (w - self.garden.grid_cols * self.cell_w) // 2
         self.oy = (h - self.garden.grid_rows * self.cell_h) // 2
 

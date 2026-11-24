@@ -35,6 +35,10 @@ and, if you stay away long enough, swallows the whole screen in leaves.
 - 🐌 **Grows slowly and unevenly**, like a living thing: some branches race ahead, others rest and catch up later,
   growth comes in spurts and lulls. About 40 minutes to overgrow the screen (configurable).
 - 🍃 **Stays alive.** Once the screen is covered, fresh bright leaves keep unfolding among the old dark ones.
+- 🍂 **Follows the seasons.** Fresh greens in spring, golden and red leaves drifting to the ground in autumn,
+  snow on the branches in winter — whatever season it is where you are right now.
+- 🐦 **Visitors.** Birds drop by to sit on a branch, butterflies flutter about on summer days,
+  and gusts of wind ruffle the leaves.
 - 🌗 **Light and dark.** Follows your system theme automatically — night garden or ink on paper.
 - 🪟 **Linux and Windows.** One `.deb` for Ubuntu, one `.exe` for Windows 10/11.
 - 🖱️ **Gone instantly** on any mouse movement, click, scroll or key press. It never locks your session.
@@ -103,8 +107,9 @@ Settings live in `%APPDATA%\idle-garden\config.ini` (`IdleGarden.exe --edit-conf
 | `idle-garden --terminal` | Grow a tree in the current terminal |
 | `idle-garden --restart` | Restart the background app (after changing settings) |
 | `idle-garden --stop` | Stop it until the next login |
-| `idle-garden --check` | Check idle detection and which theme is used |
+| `idle-garden --check` | Check idle detection and which theme and season are used |
 | `idle-garden --preview --theme light` | Try the other theme |
+| `idle-garden --preview -g 2 --season winter` | See another season |
 
 There is also an **Idle Garden** entry in the app menu that opens a preview.
 
@@ -121,6 +126,10 @@ then run `idle-garden --restart`.
 | `theme` | `auto` | `auto` follows the system light/dark style; or `dark` / `light` |
 | `dark_background` | `#000000` | Background of the dark theme |
 | `light_background` | `#f4f1e8` | Background of the light theme |
+| `season` | `auto` | `auto` follows today's date; or `spring` / `summer` / `autumn` / `winter` |
+| `hemisphere` | `auto` | For the seasons: `auto` guesses from your time zone; or `north` / `south` |
+| `animals` | `true` | Birds and butterflies come to visit |
+| `wind` | `true` | Gusts of wind ruffle the leaves |
 | `respect_inhibit` | `true` | Don't start while a video/call keeps the system awake |
 | `keep_screen_on` | `false` | Stop Ubuntu from blanking the monitor while the tree is shown |
 
