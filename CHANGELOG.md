@@ -2,6 +2,19 @@
 
 All notable changes to Idle Garden are listed here, newest first.
 
+## 0.5.0 — seasons, wind, birds and butterflies
+
+- 🍂 Seasons, from today's date: fresh greens in spring, deep greens in summer,
+  yellow, orange and red leaves that fall and pile up on the ground in autumn
+  (early autumn is still mostly green, late autumn half bare), and a half-bare tree with snow on its leaves,
+  bullfinches and falling snow in winter. The southern half of the world is detected from the time zone.
+  Force one with `season = spring|summer|autumn|winter` or `--season`.
+- 🌬️ Wind: gusts roll across the screen, ruffle the leaves and blow falling leaves and snow sideways (`wind = false` to turn off).
+- 🐦 Birds fly in, sit on a branch or peck at the ground for a while and fly off; at night they rarely come.
+- 🦋 Butterflies flutter about on spring and summer days and sometimes settle on a leaf.
+  `animals = false` or `--no-animals` to turn both off.
+- 🔎 `--check` also shows which season and hemisphere are used.
+
 ## 0.4.0 — light theme and Windows
 
 - 🌗 Light and dark themes. By default the tree follows the system setting (Ubuntu *Appearance → Style*,

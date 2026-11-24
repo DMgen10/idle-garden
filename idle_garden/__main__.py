@@ -104,6 +104,10 @@ def _parser() -> argparse.ArgumentParser:
                    help="minutes until the tree fills the screen (default 40)")
     p.add_argument("--theme", choices=("auto", "dark", "light"),
                    help="colour theme (default: auto, follows the system)")
+    p.add_argument("--season", choices=("auto", "spring", "summer", "autumn", "winter"),
+                   help="season of the garden (default: auto, from today's date)")
+    p.add_argument("--no-animals", dest="animals", action="store_false", default=None,
+                   help="no birds or butterflies")
     p.add_argument("--font-size", type=float, help="ASCII font size in pixels (default 18)")
     p.add_argument("-V", "--version", action="version", version=f"idle-garden {__version__}")
     return p
@@ -148,7 +152,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     cfg = load_config()
-    for name in ("timeout", "grow_minutes", "font_size", "theme"):
+    for name in ("timeout", "grow_minutes", "font_size", "theme", "season", "animals"):
         value = getattr(args, name)
         if value is not None:
             setattr(cfg, name, value)
@@ -161,6 +165,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.check:
         from .idle import IdleMonitor
+        from .nature import detect_hemisphere, resolve_season
         from .themes import detect_system_theme, resolve_theme
 
         try:
@@ -173,6 +178,8 @@ def main(argv: list[str] | None = None) -> int:
             f"idle now:  {mon.idle_ms()} ms",
             f"inhibited: {mon.is_inhibited()}",
             f"theme:     {resolve_theme(cfg.theme)} (setting: {cfg.theme}, system: {detect_system_theme() or 'unknown'})",
+            f"season:    {resolve_season(cfg.season, cfg.hemisphere)[0]} (setting: {cfg.season}, "
+            f"hemisphere: {cfg.hemisphere if cfg.hemisphere in ('north', 'south') else detect_hemisphere()})",
             f"config:    {CONFIG_FILE} ({'found' if CONFIG_FILE.exists() else 'not created, using defaults'})",
         )))
         return 0

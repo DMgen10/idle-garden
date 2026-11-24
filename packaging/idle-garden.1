@@ -31,6 +31,12 @@ Seconds without input before the tree appears (default 120).
 .BI \-\-theme " auto|dark|light"
 Colour theme. \fBauto\fR (default) follows the system light/dark style.
 .TP
+.BI \-\-season " auto|spring|summer|autumn|winter"
+Season of the garden. \fBauto\fR (default) follows today's date.
+.TP
+.B \-\-no\-animals
+No birds or butterflies.
+.TP
 .BI \-\-font\-size " PIXELS"
 Size of the ASCII characters (default 18).
 .TP
@@ -52,7 +58,8 @@ Print the version.
 .TP
 .I ~/.config/idle-garden/config.ini
 Settings: timeout, grow_minutes, font, font_size, theme,
-dark_background, light_background, respect_inhibit, keep_screen_on.
+dark_background, light_background, season, hemisphere, animals, wind,
+respect_inhibit, keep_screen_on.
 .SH EXAMPLES
 .TP
 .B idle-garden \-\-preview \-g 2
